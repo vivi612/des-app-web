@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reproductor de música</title>
+    <style>
+        body {
+            background-color:grey;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 10;
+        }
+
+        .container {
+            display: flex;
+            width: 90%;
+            height: 90%;
+        }
+
+        .sidebar {
+            width: 40%;
+            padding-right: 10 px;
+            overflow-y: auto;
+            cursor: pointer;
+        }
+
+        .main-content {
+            width: 65%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .album-info {
+            text-align: center;
+        }
+
+        .controls {
+            margin-top: 12px;
+        }
+        
+        button {
+            background-color:lightslategray;
+            border-color: lightslategrey;
+            cursor: pointer;
+        }
+
+        img {
+        border-radius: 10px;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class = "container"> 
+        <div class = "sidebar">
+            
+            <h3>Lista de Canciones</h3>
+            <div id="songsList">
+
+            </div>
+        </div>
+       <div class = "main-content">
+
+        <div class = "album info">
+            <img src="" alt="Portada del album" id="albumCover" style="width: 300px; height: 300px;">
+            <h2 id="songTitle"></h2>
+            <p id="albumName"></p>
+            <p id="artist"></p>
+            <p id="duration"></p>
+        </div>
+
+        <div class = "controls">
+            <button onclick="reproductor.playPause()">Play / Pause</button>
+            <button onclick="reproductor.stop()">Stop</button>
+            <button onclick="reproductor.shuffle()">Shuffle</button>
+            <button onclick="reproductor.prev()">Prev</button>
+            <button onclick="reproductor.next()">Next</button>
+        </div>
+       </div> 
+    </div>
+
+    <script>
+        let canciones = [
+    {
+        nombre: "Hard Times",
+        album: "After Laughter",
+        artista: "Paramore",
+        duracion: "3:02",
+        imagen: "https://m.media-amazon.com/images/I/71NEqnKS2dL._UF1000,1000_QL80_.jpg",   
+    },
+    {
+        nombre: "Inner Gold",
+        album: "Inner Gold",
+        artista: "Lindsey Stirling, Royal & the Serpent",
+        duracion: "3:56",
+        imagen: "https://i1.sndcdn.com/artworks-k7AWEBCuYqC6-0-t500x500.jpg",
+    },
+    {
+        nombre: "Espresso",
+        album: "Espresso",
+        artista: "Sabrina Carpenter",
+        duracion: "2:55",
+        imagen: "https://www.universalmusic.ca/files/2024/04/ESPRESSO.jpg",
+    },
+    {
+        nombre: "BAMBOLEO",
+        album: "'The ReVe Festival 2022' - Feel My Rhythm",
+        artista: "Red Velvet",
+        duracion: "3:28",
+        imagen: "https://cdns-images.dzcdn.net/images/cover/05555a792b23e273b65aaf5d8c3abf3a/500x500.jpg",
+    },
+    {
+        nombre: "Sugarcoat (NATTY Solo)",
+        album: "KISS OF LIFE",
+        artista: "KISS OF LIFE",
+        duracion: "2:59",
+        imagen: "https://image.kpopmap.com/2023/07/kiss-of-life-3-scaled.jpg",
+    },
+    {
+        nombre: "Ditto",
+        album: "Ditto",
+        artista: "NewJeans",
+        duracion: "3:05",
+        imagen: "https://images.genius.com/081066ab40bbaf5b1eddcfaa7b5b4dd2.1000x1000x1.jpg",
+    },
+    {
+        nombre: "Let The Light In",
+        album: "Connect The Dots",
+        artista: "MisterWives",
+        duracion: "5:08",
+        imagen: "https://upload.wikimedia.org/wikipedia/en/b/bb/Connectthedots.jpg",
+    },
+    {
+        nombre: "Bam Yang Gang",
+        album: "Bam Yang Gang",
+        artista: "BIBI",
+        duracion: "2:26",
+        imagen: "https://cdns-images.dzcdn.net/images/cover/c352355cb0779679600d9eb81d91edfb/500x500.jpg",
+    },
+    {
+        nombre: "Rest",
+        album: "Now, Not Yet",
+        artista: "half•alive, Samm Henshaw",
+        duracion: "3:29",
+        imagen: "https://images.genius.com/024425b1a9cd97a94ca44950e780c138.1000x1000x1.jpg",
+    },
+    {
+        nombre: "Tiptoeing",
+        album: "Tiptoeing",
+        artista: "Hope Tala",
+        duracion: "2:35",
+        imagen: "https://cdns-images.dzcdn.net/images/cover/7150b5b599abaae88bdb220f543951cc/500x500.jpg",
+    },
+    {
+        nombre: "Cuando me amabas",
+        album: "Cuando me amabas",
+        artista: "Juanpalitoschinos",
+        duracion: "3:10",
+        imagen: "https://bananamedia.com.mx/wp-content/uploads/2023/12/unnamed-46.jpg",
+    },
+    {
+        nombre: "Moonlight",
+        album: "Red Moon In Venus",
+        artista: "Kali Uchis",
+        duracion: "3:07",
+        imagen: "https://m.media-amazon.com/images/I/81ov5ONwPeL._UF1000,1000_QL80_.jpg",
+    },
+    {
+        nombre: "Bad Boy, Sad Girl",
+        album: "28 Reasons - The 1st Mini Album",
+        artista: "SEULGI, BE'O",
+        duracion: "2:57",
+        imagen: "https://lastfm.freetls.fastly.net/i/u/ar0/a3892e6075242643afe473aa7e9a6e24.jpg",
+    },
+    {
+        nombre: "Fortnight",
+        album: "The Tortured Poets Department",
+        artista: "Taylor Swift, Post Malone",
+        duracion: "3:48",
+        imagen: "https://linkstorage.linkfire.com/medialinks/images/433c5464-2a6f-49bb-9d93-2872144eb1c6/artwork-440x440.jpg",
+    },
+    {
+        nombre: "LEFT RIGHT",
+        album: "SHOOTING STAR",
+        artista: "XG",
+        duracion: "3:28",
+        imagen: "https://i1.sndcdn.com/artworks-SobXoROZAE1nWuHB-vzebgw-t500x500.jpg",
+    },
+];
+
+// Función para cargar la lista de canciones
+const cargarListaCanciones = () => {
+      let html = "";
+      canciones.forEach((cancion, index) => {
+        html += `<div onclick="mostrarDetalles(${index})">${cancion.nombre}</div>`;
+      });
+      document.getElementById("songsList").innerHTML = html;
+    };
+
+    // Función para mostrar detalles de la canción seleccionada
+    const mostrarDetalles = (index) => {
+      const cancion = canciones[index];
+      document.getElementById("albumCover").src = cancion.imagen;
+      document.getElementById("songTitle").innerText = cancion.nombre;
+      document.getElementById("albumName").innerText = cancion.album;
+      document.getElementById("artist").innerText = cancion.artista;
+      document.getElementById("duration").innerText = cancion.duracion;
+    
+    };
+
+    // Función para crear el reproductor y sus funciones
+    const initReproductor = () => {
+      let ahoraSuena = null;
+      let enReproduccion = false;
+
+      const playPause = () => {
+        if (enReproduccion) {
+          console.log("Haz pausado la reproducción");
+          enReproduccion = false;
+        } else {
+          console.log("Reproduciendo...");
+          enReproduccion = true;
+        }
+      };
+
+      const stop = () => {
+        console.log("Haz detenido la reproducción");
+        enReproduccion = false;
+        ahoraSuena = null;
+      };
+
+      const shuffle = () => {
+        console.log("Aleatorio...");
+        ahoraSuena = Math.floor(Math.random() * canciones.length);
+        const cancion = canciones[ahoraSuena];
+        document.getElementById("albumCover").src = cancion.imagen;
+        document.getElementById("songTitle").innerText = cancion.nombre;
+        document.getElementById("albumName").innerText = cancion.album;
+        document.getElementById("artist").innerText = cancion.artista;
+        document.getElementById("duration").innerText = cancion.duracion;
+      };
+
+      const next = () => {
+        if (ahoraSuena !== null && ahoraSuena < canciones.length - 1) {
+          ahoraSuena++;
+          const cancion = canciones [ahoraSuena];
+          document.getElementById("albumCover").src = cancion.imagen;
+          document.getElementById("songTitle").innerText = cancion.nombre;
+          document.getElementById("albumName").innerText = cancion.album;
+          document.getElementById("artist").innerText = cancion.artista;
+          document.getElementById("duration").innerText = cancion.duracion;
+        }
+      };
+
+      const prev = () => {
+        if (ahoraSuena !== null && ahoraSuena > 0) {
+          ahoraSuena--;
+          const cancion = canciones[ahoraSuena];
+          document.getElementById("albumCover").src = cancion.imagen;
+          document.getElementById("songTitle").innerText = cancion.nombre;
+          document.getElementById("albumName").innerText = cancion.album;
+          document.getElementById("artist").innerText = cancion.artista;
+          document.getElementById("duration").innerText = cancion.duracion;
+        }
+      };
+
+      return {
+        playPause,
+        stop,
+        shuffle,
+        next,
+        prev,
+      };
+    };
+
+    // Crear el reproductor
+    const reproductor = initReproductor();
+
+    // Cargar la lista de canciones al cargar la página
+    window.onload = () => {
+      cargarListaCanciones();
+    };
+    </script>
+</body>
+</html>
